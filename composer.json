@@ -1,8 +1,12 @@
 {
-    "name": "strebl/l5-ldap-auth",
+    "name": "mikumakues/ldap-auth",
     "description": "Laravel 5 Active Directory LDAP Authentication driver",
     "keywords": ["laravel", "L5", "LDAP", "Authentication", "Laravel 5"],
     "authors": [
+        {
+            "name": "Manuel Kues",
+            "email": "michael.kues@hotmail.com"
+        },
         {
             "name": "Manuel Strebel",
             "email": "manuel_st@msn.com"
