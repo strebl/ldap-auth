@@ -211,7 +211,7 @@ class LdapAuthUserProvider implements UserProvider
     {
         $model = '\\' . ltrim($this->model, '\\');
 
-        return new $model;
+        return new $model([]);
     }
 
     /**
