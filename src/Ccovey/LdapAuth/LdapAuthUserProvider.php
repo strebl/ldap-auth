@@ -74,6 +74,7 @@ class LdapAuthUserProvider implements UserProvider
             $ldapUserInfo = $this->setInfoArray($infoCollection);
 
             if ($this->model) {
+                $model = $this->createModel()->newQuery()->where($userNameField, $username)->first();
                 if ( ! is_null($model) ) {
                     return $this->addLdapToModel($model, $ldapUserInfo);
                 }
