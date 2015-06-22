@@ -11,8 +11,7 @@ use Illuminate\Contracts\Auth\UserProvider;
  * This allows the fields in the array to be
  * accessed through the Auth::user() method.
  */
-class LdapAuthUserProvider implements UserProvider
-{
+class LdapAuthUserProvider implements UserProvider {
   /**
    * Active Directory Object.
    *
@@ -30,8 +29,7 @@ class LdapAuthUserProvider implements UserProvider
    *
    * @param adLDAP\adLDAP $conn
    */
-  public function __construct(adLDAP\adLDAP $conn, $config, $model = null)
-  {
+  public function __construct(adLDAP\adLDAP $conn, $config, $model = NULL) {
     $this->ad = $conn;
     $this->config = $config;
     $this->model = $model;
@@ -44,9 +42,8 @@ class LdapAuthUserProvider implements UserProvider
    *
    * @return Illuminate\Auth\GenericUser|null
    */
-  public function retrieveByID($identifier)
-  {
-    $ldapUserInfo = null;
+  public function retrieveByID($identifier) {
+    $ldapUserInfo = NULL;
     $userNameField = $this->getUsernameField();
 
     if ($this->model) {
@@ -55,7 +52,8 @@ class LdapAuthUserProvider implements UserProvider
 
     if (isset($model)) {
       $username = $model->$userNameField;
-    } else {
+    }
+    else {
       $username = $identifier;
     }
 
@@ -67,7 +65,8 @@ class LdapAuthUserProvider implements UserProvider
       $info[0]['memberof']['count'] = count($groups);
 
       $infoCollection = new \adLDAP\collections\adLDAPUserCollection($info, $this->ad);
-    } else {
+    }
+    else {
       $infoCollection = $this->ad->user()->infoCollection($username, ['*']);
     }
 
@@ -87,21 +86,19 @@ class LdapAuthUserProvider implements UserProvider
   /**
    * Retrieve a user by by their unique identifier and "remember me" token.
    *
-   * @param mixed  $identifier
+   * @param mixed $identifier
    * @param string $token
    *
    * @return UserContract|null
    */
-  public function retrieveByToken($identifier, $token)
-  {
+  public function retrieveByToken($identifier, $token) {
     return; // this shouldn't be needed as user / password is in ldap
   }
 
   /**
    * @return void
    */
-  public function updateRememberToken(UserContract $user, $token)
-  {
+  public function updateRememberToken(UserContract $user, $token) {
     return; // this shouldn't be needed as user / password is in ldap
   }
 
@@ -112,22 +109,26 @@ class LdapAuthUserProvider implements UserProvider
    *
    * @return Illuminate\Auth\GenericUser|null
    */
-  public function retrieveByCredentials(array $credentials)
-  {
+  public function retrieveByCredentials(array $credentials) {
     if (!$user = $credentials[$this->getUsernameField()]) {
       throw new \InvalidArgumentException();
     }
 
     //recursive groups fix
     if ($this->ad->getRecursiveGroups()) {
-      $info = $this->ad->user()->info($user, ['*']);
-      $groups = $this->ad->user()->groups($user);
-      $info[0]['memberof'] = $groups;
-      $info[0]['memberof']['count'] = count($groups);
 
-      $infoCollection = new \adLDAP\collections\adLDAPUserCollection($info, $this->ad);
-    } else {
-      $infoCollection = $this->ad->user()->infoCollection($user, ['*']);
+      $info = $this->ad->user()->info($user, ['*']);
+
+      if ($info) { //check for existence of user before assigning groups
+        $groups = $this->ad->user()->groups($user);
+        $info[0]['memberof'] = $groups;
+        $info[0]['memberof']['count'] = count($groups);
+
+        $infoCollection = new \adLDAP\collections\adLDAPUserCollection($info, $this->ad);
+      }
+      else {
+        $infoCollection = $this->ad->user()->infoCollection($user, ['*']);
+      }
     }
 
     if ($infoCollection) {
@@ -148,20 +149,20 @@ class LdapAuthUserProvider implements UserProvider
 
       return new LdapUser((array) $ldapUserInfo);
     }
+
   }
 
   /**
    * Validate a user against the given credentials.
    *
    * @param UserContract $user
-   * @param array        $credentials
+   * @param array $credentials
    *
    * @throws adLDAP\adLDAPException
    *
    * @return bool
    */
-  public function validateCredentials(UserContract $user, array $credentials)
-  {
+  public function validateCredentials(UserContract $user, array $credentials) {
     return $this->ad->authenticate($credentials[$this->getUsernameField()], $credentials['password']);
   }
 
@@ -172,8 +173,7 @@ class LdapAuthUserProvider implements UserProvider
    *
    * @return array $info
    */
-  protected function setInfoArray($infoCollection)
-  {
+  protected function setInfoArray($infoCollection) {
     /*
     * in app/auth.php set the fields array with each value
     * as a field you want from active directory
@@ -184,13 +184,16 @@ class LdapAuthUserProvider implements UserProvider
       foreach ($this->config['fields'] as $k => $field) {
         if ($k == 'groups') {
           $info[$k] = $this->getAllGroups($infoCollection->memberof);
-        } elseif ($k == 'primarygroup') {
+        }
+        elseif ($k == 'primarygroup') {
           $info[$k] = $this->getPrimaryGroup($infoCollection->distinguishedname);
-        } else {
+        }
+        else {
           $info[$k] = $infoCollection->$field;
         }
       }
-    } else {
+    }
+    else {
       //if no fields array present default to username and displayName
       $info['username'] = $infoCollection->samaccountname;
       $info['displayname'] = $infoCollection->displayName;
@@ -204,7 +207,8 @@ class LdapAuthUserProvider implements UserProvider
     * The table is the OU in Active directory you need a list of.
     */
     if (!empty($this->config['userList'])) {
-      $info['userlist'] = $this->ad->folder()->listing([$this->config['group']]);
+      $info['userlist'] = $this->ad->folder()
+        ->listing([$this->config['group']]);
     }
 
     return $info;
@@ -213,9 +217,8 @@ class LdapAuthUserProvider implements UserProvider
   /**
    * @return UserContract
    */
-  public function createModel()
-  {
-    $model = '\\'.ltrim($this->model, '\\');
+  public function createModel() {
+    $model = '\\' . ltrim($this->model, '\\');
 
     return new $model();
   }
@@ -223,13 +226,12 @@ class LdapAuthUserProvider implements UserProvider
   /**
    * Add Ldap fields to current user model.
    *
-   * @param UserContract                       $model
+   * @param UserContract $model
    * @param adLDAP\collection\adLDAPCollection $ldap
    *
    * @return UserContract
    */
-  protected function addLdapToModel($model, $ldap)
-  {
+  protected function addLdapToModel($model, $ldap) {
     $combined = $ldap + $model->getAttributes();
 
     return $model->fill($combined);
@@ -242,8 +244,7 @@ class LdapAuthUserProvider implements UserProvider
    *
    * @return string
    */
-  protected function getPrimaryGroup($groupList)
-  {
+  protected function getPrimaryGroup($groupList) {
     $groups = explode(',', $groupList);
 
     return substr($groups[1], '3');
@@ -256,8 +257,7 @@ class LdapAuthUserProvider implements UserProvider
    *
    * @return array
    */
-  protected function getAllGroups($groups)
-  {
+  protected function getAllGroups($groups) {
     $grps = '';
     if (!is_null($groups)) {
       if (!is_array($groups)) {
@@ -269,7 +269,7 @@ class LdapAuthUserProvider implements UserProvider
           if (substr($splitGroup, 0, 3) == 'DC=') {
             $grps[substr($splitGroup, '3')] = substr($splitGroup, '3');
           }
-          else{
+          else {
             $grps[$splitGroup] = $splitGroup;
           }
         }
@@ -279,13 +279,11 @@ class LdapAuthUserProvider implements UserProvider
     return $grps;
   }
 
-  public function getModel()
-  {
+  public function getModel() {
     return $this->model;
   }
 
-  protected function getUsernameField()
-  {
+  protected function getUsernameField() {
     return isset($this->config['username_field']) ? $this->config['username_field'] : 'username';
   }
 }
