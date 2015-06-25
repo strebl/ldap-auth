@@ -132,25 +132,24 @@ class LdapAuthUserProvider implements UserProvider
             $infoCollection = $this->ad->user()->infoCollection($user, ['*']);
         }
 
+        if ($infoCollection) {
+            $ldapUserInfo = $this->setInfoArray($infoCollection);
+            if ($this->model) {
+                $query = $this->createModel()->newQuery();
 
-      if ($infoCollection) {
-          $ldapUserInfo = $this->setInfoArray($infoCollection);
-          if ($this->model) {
-              $query = $this->createModel()->newQuery();
+                foreach ($credentials as $k => $credential) {
+                    if (!str_contains($k, 'password') && !str_contains($k, '_token')) {
+                        $query->where($k, $credential);
+                    }
+                }
 
-              foreach ($credentials as $k => $credential) {
-                  if (!str_contains($k, 'password') && !str_contains($k, '_token')) {
-                      $query->where($k, $credential);
-                  }
-              }
+                if ($model = $query->first()) {
+                    return $this->addLdapToModel($model, $ldapUserInfo);
+                }
+            }
 
-              if ($model = $query->first()) {
-                  return $this->addLdapToModel($model, $ldapUserInfo);
-              }
-          }
-
-          return new LdapUser((array) $ldapUserInfo);
-      }
+            return new LdapUser((array) $ldapUserInfo);
+        }
     }
   }
 
