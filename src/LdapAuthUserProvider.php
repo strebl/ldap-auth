@@ -131,7 +131,7 @@ class LdapAuthUserProvider implements UserProvider
         } else {
             $infoCollection = $this->ad->user()->infoCollection($user, ['*']);
         }
-    }
+
 
       if ($infoCollection) {
           $ldapUserInfo = $this->setInfoArray($infoCollection);
@@ -151,6 +151,7 @@ class LdapAuthUserProvider implements UserProvider
 
           return new LdapUser((array) $ldapUserInfo);
       }
+    }
   }
 
   /**
