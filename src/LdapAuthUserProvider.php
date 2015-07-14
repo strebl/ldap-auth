@@ -50,7 +50,7 @@ class LdapAuthUserProvider implements UserProvider
         $userNameField = $this->getUsernameField();
 
         if ($this->model) {
-            $model = $this->createModel()->newQuery()->find($identifier);
+            $model = $this->createModel()->newQuery()->where($this->getUsernameField(), $identifier)->first();
         }
 
         if (isset($model)) {
