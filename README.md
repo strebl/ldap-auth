@@ -11,7 +11,7 @@ Laravel 5 Active Directory LDAP Authentication driver.
 Fork
 ====
 
-This is a fork of Cody Covey's ldap-auth package. Unfortunately he doesn't develeped the package recently and didn't update the package to Laravel 4.1+ or even Laravel 5. Therefore I decided to fork the package to provide a minimal Laravel 5 support.
+This is a fork of Cody Covey's ldap-auth package. Unfortunately he doesn't developed the package recently and didn't update the package to Laravel 4.1+ or even Laravel 5. Therefore I decided to fork the package to provide a minimal Laravel 5 support.
 
 The first release, 2.0, isn't well tested. Just be careful!
 
@@ -29,10 +29,10 @@ This will follow releases similar to how Laravel itself manages releases. When L
 
 | Laravel Version | Package Version | Package Status |
 |-----------------|-----------------|----------------| 
-| 5.1.x			  | 2.1.*	 	    | maintaned 	 |
-| 5.0.x 		  | 2.1.*	 	    | maintaned 	 |
-| 5.0.x 		  | 2.0.*	 	    | abandon 	 	 |
-| 4.x 			  | 1.0.*	 	    | abandon		 |
+| 5.1.x			  | 2.1.*	 	    | maintained 	 |
+| 5.0.x 		  | 2.1.*	 	    | maintained 	 |
+| 5.0.x 		  | 2.0.*	 	    | abandoned	 	 |
+| 4.x 			  | 1.0.*	 	    | abandoned		 |
 
 Version 2.1 requires PHP 5.5+. If you are using Laravel 5.0 which supports PHP 5.4 you can still use 2.0.*. However, this version won't get updates.
 
