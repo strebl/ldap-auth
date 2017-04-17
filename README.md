@@ -131,7 +131,7 @@ To edit what is returned you can specify in `config/auth.php` (Laravel 4: `app/c
 
 For more information on what fields from AD are available to you visit http://goo.gl/6jL4V
 
-You may also get a complete user list for a specific OU by defining the `userList` key and setting it to `true`. You must also set the `group` key that defined which OU to look at. Do not that on a large AD this may slow down the application.
+You may also get a complete user list for a specific OU by defining the `userlist` key and setting it to `true`. You must also set the `group` key that defined which OU to look at. Do not that on a large AD this may slow down the application.
 
 Model Usage
 ===========
